@@ -177,7 +177,6 @@ export default HomePage;
 import React, { useState } from "react";
 import styled from "styled-components";
 
-// Estilos para o pop-up e seus componentes
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -332,8 +331,8 @@ function Paginicial() {
   const handleClosePopup = () => {
     setShowPopup(false);
     setTutorialContent("");
-    setHelped(null);  // Reset question answer
-    setFormData({ nome: "", comentario: "" }); // Clear form data
+    setHelped(null);  
+    setFormData({ nome: "", comentario: "" });
   };
 
   const handleHelpedAnswer = (answer) => {
@@ -409,13 +408,11 @@ function Paginicial() {
 
   return (
     <Pai>
-      {/* Botões para abrir os tutoriais */}
       <OpenButton onClick={() => handleOpenPopup(tutorials.tutorial1)}>Internet</OpenButton>
       <OpenButton onClick={() => handleOpenPopup(tutorials.tutorial2)}>Monitor</OpenButton>
       <OpenButton onClick={() => handleOpenPopup(tutorials.tutorial4)}>Senha</OpenButton>
       <OpenButton onClick={() => handleOpenPopup(tutorials.tutorial5)}>Email</OpenButton>
 
-      {/* Modal Overlay e conteúdo */}
       <Overlay show={showPopup} onClick={handleClosePopup}>
         <Modal onClick={(e) => e.stopPropagation()}>
           <CloseButton onClick={handleClosePopup}>×</CloseButton>
