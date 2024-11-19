@@ -1,27 +1,201 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
 
-const Historico = () => {
-  const [chamados, setChamados] = useState([]);
+const Container = styled.div`
+  display: flex;
+  height: 100%;
+`;
+
+const Content = styled.div`
+  width: 50vw;
+  background-color: #d3d3d3;
+  padding: 20px;
+  margin-left: -40px;
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
+
+const IconButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+`;
+
+const SearchInput = styled.input`
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1;
+`;
+
+const ActionsButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+`;
+
+const TableHeader = styled.th`
+  padding: 10px;
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  text-align: left;
+`;
+
+const TableRow = styled.tr`
+  &:nth-child(even) {
+    background-color: #f7f7f7;
+  }
+`;
+
+const TableData = styled.td`
+  padding: 10px;
+  border: 1px solid #ccc;
+  position: relative;
+`;
+const StatusIndicator = styled.div`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: ${props => props.color || 'gray'};
+  position: relative;
+
+  /* Tooltip styling */
+  &:hover::after {
+    content: "${props => props.tooltip}";
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    z-index: 10;
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+
+  &::after {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+`;
+
+const UserHistory = () => {
+  const [calls, setCalls] = useState([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    // Aqui você puxaria os dados da database
-    const fetchedChamados = [
-      { id: 1, issue: 'Monitor não está ligando' },
-      { id: 2, issue: 'Teclado não responde' },
-    ];
-    setChamados(fetchedChamados);
+    axios
+      .get('http://localhost:3001/chamados?userId=1')
+      .then(response => setCalls(response.data))
+      .catch(error => console.error('Erro ao buscar chamados:', error));
   }, []);
 
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const filteredCalls = calls.filter(call =>
+    call.titulo.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div>
-      <h2>Histórico de Chamados</h2>
-      <ul>
-        {chamados.map((chamado) => (
-          <li key={chamado.id}>{chamado.issue}</li>
-        ))}
-      </ul>
-    </div>
+    <Container>
+      <Content>
+        <Toolbar>
+          <IconButton>☰</IconButton>
+          <SearchInput
+            type="text"
+            placeholder="Pesquisar"
+            value={search}
+            onChange={handleSearchChange}
+          />
+          <ActionsButton>Outras Ações</ActionsButton>
+        </Toolbar>
+
+        <Table>
+          <thead>
+            <tr>
+              <TableHeader>Status</TableHeader>
+              <TableHeader>Código T.I</TableHeader>
+              <TableHeader>Título</TableHeader>
+              <TableHeader>Nome Sol.</TableHeader>
+              <TableHeader>Nome Analis.</TableHeader>
+              <TableHeader>Setor</TableHeader>
+              <TableHeader>etc...</TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredCalls.map((call, index) => (
+              <TableRow key={index}>
+                <TableData>
+                  <StatusIndicator
+                    color={
+                      call.status === 'Concluído'
+                        ? 'green'
+                        : call.status === 'Em Progresso'
+                        ? 'orange'
+                        : call.status === 'Aberto'
+                        ? 'red'
+                        : call.status === 'Cancelada'
+                        ? 'orange'
+                        : call.status === 'Não Negociada'
+                        ? 'gray'
+                        : call.status === 'Em Atendimento'
+                        ? 'blue'
+                        : call.status === 'Rejeitado'
+                        ? 'purple'
+                        : 'gray' // Default color if status doesn't match
+                    }
+                    tooltip={
+                      call.status === 'Concluído'
+                        ? 'Concluído: Solicitação finalizada'
+                        : call.status === 'Em Progresso'
+                        ? 'Em Progresso: Solicitação em andamento'
+                        : call.status === 'Aberto'
+                        ? 'Aberto: Aguardando análise'
+                        : call.status === 'Cancelada'
+                        ? 'Cancelada: Solicitação cancelada'
+                        : call.status === 'Não Negociada'
+                        ? 'Não Negociada: Solicitação sem negociação'
+                        : call.status === 'Em Atendimento'
+                        ? 'Em Atendimento: Solicitação em atendimento'
+                        : call.status === 'Rejeitado'
+                        ? 'Rejeitado: Solicitação rejeitada'
+                        : 'Desconhecido: Status não definido'
+                    }
+                  />
+                </TableData>
+                <TableData>{call.codigoTI}</TableData>
+                <TableData>{call.titulo}</TableData>
+                <TableData>{call.nomeSol}</TableData>
+                <TableData>{call.nomeAnalis}</TableData>
+                <TableData>{call.setor}</TableData>
+                <TableData>etc...</TableData>
+              </TableRow>
+            ))}
+          </tbody>
+        </Table>
+      </Content>
+    </Container>
   );
 };
-
-export default Historico;
