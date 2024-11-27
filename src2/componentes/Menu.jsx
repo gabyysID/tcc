@@ -8,9 +8,10 @@ const Nav = styled.nav`
   background-color: #1a1a2e;
   color: white;
   padding: 20px;
-  height: 100vh;
+  height: 120vh;
   display: flex;
   flex-direction: column;
+  float: left;
 `;
 
 const Title = styled.h2`
@@ -28,7 +29,7 @@ const ListItem = styled.li`
 
 const Menu = () => (
   <Nav>
-    <Title>Chamados de T.I</Title>
+    <Title> <Link to="/home" style={{ color: 'white', textDecoration: 'none' }}>Chamado T.I</Link></Title>
     <List>
       <ListItem>
         <Link to="/form-physical" style={{ color: 'white', textDecoration: 'none' }}>Chamado para Infraestrurura</Link>
@@ -50,3 +51,4 @@ const Menu = () => (
 );
 
 export default Menu;
+
