@@ -1,3 +1,4 @@
+//src/pages/userHistory
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -5,17 +6,25 @@ import axios from 'axios';
 const Container = styled.div`
   display: flex;
   height: 100%;
+  flex-direction: column; 
 `;
 
 const Content = styled.div`
-  width: 50vw;
+  width: 100%;
   background-color: #d3d3d3;
   padding: 20px;
-  margin-left: -40px;
+  margin-left: 200px;
+  justify-content: center;
+  
+
+  @media (min-width: 768px) {
+    width: 50vw; 
+  }
 `;
 
 const Toolbar = styled.div`
   display: flex;
+  flex-wrap: wrap; 
   align-items: center;
   gap: 10px;
   margin-bottom: 20px;
@@ -33,6 +42,7 @@ const SearchInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   flex: 1;
+  min-width: 200px;
 `;
 
 const ActionsButton = styled.button`
@@ -48,6 +58,12 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   background-color: white;
+  overflow-x: auto; 
+  table-layout: fixed; 
+
+  @media (max-width: 768px) {
+    font-size: 0.9em; 
+  }
 `;
 
 const TableHeader = styled.th`
@@ -55,6 +71,7 @@ const TableHeader = styled.th`
   background-color: #e0e0e0;
   border: 1px solid #ccc;
   text-align: left;
+  word-wrap: break-word; 
 `;
 
 const TableRow = styled.tr`
@@ -67,7 +84,9 @@ const TableData = styled.td`
   padding: 10px;
   border: 1px solid #ccc;
   position: relative;
+  word-wrap: break-word; 
 `;
+
 const StatusIndicator = styled.div`
   width: 10px;
   height: 10px;
@@ -75,7 +94,6 @@ const StatusIndicator = styled.div`
   background-color: ${props => props.color || 'gray'};
   position: relative;
 
-  /* Tooltip styling */
   &:hover::after {
     content: "${props => props.tooltip}";
     position: absolute;
@@ -149,23 +167,21 @@ const UserHistory = () => {
               <TableRow key={index}>
                 <TableData>
                   <StatusIndicator
-                    color={
-                      call.status === 'Concluído'
-                        ? 'green'
-                        : call.status === 'Em Progresso'
-                        ? 'orange'
-                        : call.status === 'Aberto'
-                        ? 'red'
-                        : call.status === 'Cancelada'
-                        ? 'orange'
-                        : call.status === 'Não Negociada'
-                        ? 'gray'
-                        : call.status === 'Em Atendimento'
-                        ? 'blue'
-                        : call.status === 'Rejeitado'
-                        ? 'purple'
-                        : 'gray' // Default color if status doesn't match
-                    }
+                    color={call.status === 'Concluído'
+                      ? 'green'
+                      : call.status === 'Em Progresso'
+                      ? 'orange'
+                      : call.status === 'Aberto'
+                      ? 'red'
+                      : call.status === 'Cancelada'
+                      ? 'orange'
+                      : call.status === 'Não Negociada'
+                      ? 'gray'
+                      : call.status === 'Em Atendimento'
+                      ? 'blue'
+                      : call.status === 'Rejeitado'
+                      ? 'purple'
+                      : 'gray'}
                     tooltip={
                       call.status === 'Concluído'
                         ? 'Concluído: Solicitação finalizada'
@@ -199,3 +215,5 @@ const UserHistory = () => {
     </Container>
   );
 };
+
+export default UserHistory;
