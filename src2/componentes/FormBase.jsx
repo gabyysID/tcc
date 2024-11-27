@@ -1,53 +1,109 @@
+// components/FormBase.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 
+const PageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f0f0;
+  padding: 0 15px; 
+  
+`;
+
 const FormContainer = styled.form`
-  background-color: #d3d3d3;
-  padding: 20px;
+  background-color: #f9f9f9;
+  padding: 25px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 500px;
-  margin: 20px;
+  gap: 15px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin: auto; 
+  box-sizing: border-box; 
 
   @media (max-width: 768px) {
+    padding: 20px;
     max-width: 100%;
     margin: 10px;
-    padding: 15px;
   }
 `;
 
 const Label = styled.label`
-  font-size: 0.9em;
+  font-size: 1em;
+  font-weight: 600;
+  color: #333;
   display: flex;
   flex-direction: column;
-  color: #333;
+  gap: 5px;
 `;
 
 const Input = styled.input`
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 1em;
+  color: #333;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9em;
+    padding: 8px;
+  }
 `;
 
 const Select = styled.select`
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 1em;
+  color: #333;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9em;
+    padding: 8px;
+  }
 `;
 
 const TextArea = styled.textarea`
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  resize: none;
+  resize: vertical;
+  font-size: 1em;
+  color: #333;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9em;
+    padding: 8px;
+  }
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 15px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -56,12 +112,14 @@ const ButtonContainer = styled.div`
 `;
 
 const Button = styled.button`
-  padding: 10px 20px;
+  padding: 12px 25px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 1em;
   color: white;
   background-color: ${props => props.primary ? '#007bff' : '#6c757d'};
+  transition: opacity 0.3s;
 
   &:hover {
     opacity: 0.8;
@@ -69,6 +127,7 @@ const Button = styled.button`
 
   @media (max-width: 768px) {
     width: 100%;
+    padding: 10px 0;
   }
 `;
 
@@ -82,23 +141,32 @@ const FormBase = ({ category }) => {
     centroCusto: '',
     descCusto: '',
     detalhamento: '',
-    categoria: category 
+    categoria: category
   });
 
-  // Lista de analistas com seus códigos
-  const analistas = [
-    { id: '101', nome: 'Ana Costa' },
-    { id: '102', nome: 'João Souza' },
-    { id: '103', nome: 'Rita Lopes' },
-    { id: '104', nome: 'Fernando Silva' },
-  ];
+  const analistas = {
+    Infraestrutura: [
+      { id: '026', nome: 'Lucas Nunes' },
+      { id: '006', nome: 'José Carlos' },
+      { id: '029', nome: 'Felipe Santos' },
+      { id: '027', nome: 'Wanderson Rodrigues' },
+      { id: '030', nome: 'Enzo Ugbobi' },
+    ],
+    Sistema: [
+      { id: '001', nome: 'Regiane Kemita' },
+      { id: '022', nome: 'Irineu Filho' },
+      { id: '002', nome: 'Isaías Chipoch' },
+      { id: '014', nome: 'Ivandro Márcio' },
+    ]
+  };
+
+  const filteredAnalistas = analistas[category] || [];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Se o campo alterado for o nome do analista, atualiza também o código automaticamente
     if (name === 'nomeAnalista') {
-      const selectedAnalista = analistas.find(analista => analista.nome === value);
+      const selectedAnalista = filteredAnalistas.find(analista => analista.nome === value);
       setFormData({
         ...formData,
         nomeAnalista: value,
@@ -132,52 +200,54 @@ const FormBase = ({ category }) => {
   };
 
   return (
-    <FormContainer onSubmit={handleSubmit}>
-      <Label>
-        Chamado T.I:
-        <Input type="text" name="titulo" value={formData.titulo} onChange={handleChange} required />
-      </Label>
-      <Label>
-        Cod. Solicit.:
-        <Input type="text" name="codSolicitante" value={formData.codSolicitante} onChange={handleChange} required />
-      </Label>
-      <Label>
-        Nome Solicit.:
-        <Input type="text" name="nomeSolicitante" value={formData.nomeSolicitante} onChange={handleChange} required />
-      </Label>
-      <Label>
-        Cod. Analista:
-        <Input type="text" name="codAnalista" value={formData.codAnalista} onChange={handleChange} readOnly required />
-      </Label>
-      <Label>
-        Nome Analista:
-        <Select name="nomeAnalista" value={formData.nomeAnalista} onChange={handleChange} required>
-          <option value="">Selecione um analista</option>
-          {analistas.map(analista => (
-            <option key={analista.id} value={analista.nome}>
-              {analista.nome}
-            </option>
-          ))}
-        </Select>
-      </Label>
-      <Label>
-        Centro Custo:
-        <Input type="text" name="centroCusto" value={formData.centroCusto} onChange={handleChange} required />
-      </Label>
-      <Label>
-        Desc. Custo:
-        <Input type="text" name="descCusto" value={formData.descCusto} onChange={handleChange} required />
-      </Label>
-      <Label>
-        Detalhamento:
-        <TextArea name="detalhamento" value={formData.detalhamento} onChange={handleChange} rows="4" required />
-      </Label>
-      <ButtonContainer>
-        <Button type="button">Outras Ações</Button>
-        <Button type="button">Cancelar</Button>
-        <Button type="submit" primary>Salvar</Button>
-      </ButtonContainer>
-    </FormContainer>
+    <PageContainer>
+      <FormContainer onSubmit={handleSubmit}>
+        <Label>
+          Titulo:
+          <Input type="text" name="titulo" value={formData.titulo} onChange={handleChange} required />
+        </Label>
+        <Label>
+          Nome Solicit.:
+          <Input type="text" name="nomeSolicitante" value={formData.nomeSolicitante} onChange={handleChange} required />
+        </Label>
+        <Label>
+          Cod. Solicit.:
+          <Input type="text" name="codSolicitante" value={formData.codSolicitante} onChange={handleChange} required />
+        </Label>
+        <Label>
+          Nome Analista:
+          <Select name="nomeAnalista" value={formData.nomeAnalista} onChange={handleChange} required>
+            <option value="">Selecione um analista</option>
+            {filteredAnalistas.map(analista => (
+              <option key={analista.id} value={analista.nome}>
+                {analista.nome}
+              </option>
+            ))}
+          </Select>
+        </Label>
+        <Label>
+          Cod. Analista:
+          <Input type="text" name="codAnalista" value={formData.codAnalista} onChange={handleChange} readOnly required />
+        </Label>
+        <Label>
+          Centro Custo:
+          <Input type="text" name="centroCusto" value={formData.centroCusto} onChange={handleChange} required />
+        </Label>
+        <Label>
+          Desc. Custo:
+          <Input type="text" name="descCusto" value={formData.descCusto} onChange={handleChange} required />
+        </Label>
+        <Label>
+          Detalhamento:
+          <TextArea name="detalhamento" value={formData.detalhamento} onChange={handleChange} rows="4" required />
+        </Label>
+        <ButtonContainer>
+          <Button type="button">Outras Ações</Button>
+          <Button type="button">Cancelar</Button>
+          <Button type="submit" primary>Salvar</Button>
+        </ButtonContainer>
+      </FormContainer>
+    </PageContainer>
   );
 };
 
